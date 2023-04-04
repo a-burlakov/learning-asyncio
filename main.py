@@ -1,15 +1,28 @@
 import asyncio
-from time import sleep
+from asyncio import sleep
+
+QUERY = "INSERT INTO some_test_table VALUES ($1, $2, $3)"
 
 
-def make_request(cnt):
-    print("Запрос к БД:", cnt)
-    sleep(0.1)
+async def make_request():
+    await sleep(0.1)
+
+
+async def main():
+    chunk = 200
+    tasks = []
+    pended = 0
+    for x in range(1000):
+        task = asyncio.create_task(make_request())
+        pended += 1
+        tasks.append(task)
+
+        if len(tasks) == 200 or pended == 10_000:
+
+            res = await asyncio.gather(*tasks)
+            tasks.clear()
 
 
 if __name__ == "__main__":
-
-    cnt = 0
-    for _ in range(100):
-        make_request(cnt)
-        cnt += 1
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
