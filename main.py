@@ -21,6 +21,7 @@ async def main():
 
             res = await asyncio.gather(*tasks)
             tasks.clear()
+            print(pended)
 
 
 if __name__ == "__main__":
