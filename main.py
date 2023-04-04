@@ -14,7 +14,7 @@ async def increase():
 
 async def count():
     while True:
-        await increase()
+        tt = await increase()
         my_counter = MyCounter.get()
         print(f"Счетчик: {my_counter}")
 
