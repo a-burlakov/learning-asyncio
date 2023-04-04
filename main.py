@@ -3,22 +3,44 @@ import threading
 from asyncio import sleep
 
 
-def multiply(a, b):
-    return a * b
+async def count(counter):
+    print("Количество записей в списке:", len(counter))
 
-
-def generator(a, b):
     while True:
-        yield a * b
-        a = a + 1
+        await sleep(0.001)
+        counter.append(1)
 
 
-async def async_function(a):
+async def print_every_one_sec(counter):
     while True:
-        await a
-        a = a + 1
+        await sleep(1)
+        print("- 1 секунда прошла, количество записей: ", len(counter))
+
+
+async def print_every_five_sec(counter):
+    while True:
+        await sleep(5)
+        print("---- 5 секунд прошла, количество записей: ", len(counter))
+
+
+async def print_every_ten_sec(counter):
+    while True:
+        await sleep(10)
+        print("-------- 10 секунд прошла, количество записей: ", len(counter))
+
+
+async def main():
+    counter = list()
+
+    tasks = [
+        count(counter),
+        print_every_one_sec(counter),
+        print_every_five_sec(counter),
+        print_every_ten_sec(counter),
+    ]
+
+    await asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
-    a = async_function(2)
-    print(dir(a))
+    asyncio.run(main())
