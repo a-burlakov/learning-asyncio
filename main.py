@@ -1,46 +1,47 @@
 import asyncio
-import threading
 from asyncio import sleep
+from time import sleep as synch_sleep
 
 
-async def count(counter):
-    print("Количество записей в списке:", len(counter))
+async def waiter_1():
 
-    while True:
-        await sleep(0.001)
-        counter.append(1)
-
-
-async def print_every_one_sec(counter):
-    while True:
+    for _ in range(10):
+        print("Я ждун №1, и я жду...")
         await sleep(1)
-        print("- 1 секунда прошла, количество записей: ", len(counter))
 
 
-async def print_every_five_sec(counter):
-    while True:
-        await sleep(5)
-        print("---- 5 секунд прошла, количество записей: ", len(counter))
+async def waiter_2():
+
+    for _ in range(10):
+        print("Я ждун №2, и я жду...")
+        await sleep(1)
 
 
-async def print_every_ten_sec(counter):
-    while True:
-        await sleep(10)
-        print("-------- 10 секунд прошла, количество записей: ", len(counter))
+async def waiter_3():
+
+    for _ in range(10):
+        print("Я ждун №3, и я жду...")
+        await sleep(1)
 
 
-async def main():
-    counter = list()
-
+async def main_async_function():
+    # Когда мы обозначаем функцию как async, то мы по сути делаем из нее не обыкновенную функцию,
+    # а нечто навроде генератора, только асинхронного. И она возвращает уже не результат выполнения функции,
+    # а т.н. корутину (corutine).
+    # Эти корутины мы помещаем в список, и всем скопом кидаем в event_loop, где они будут выполняться, передавая управление
+    # друг другу в соответствии с тем, где у них внутри расположены await.
+    # await по сути значит, что в этом месте мы останавливаем исполнение функции, чтобы ожидать выполнения других
+    # _асинхронных_ (!) функций (тоже корутин). Когда эти корутины выполнятся, то event loop скажет интерпретатору об этом,
+    # и выполнение продолжится.
     tasks = [
-        count(counter),
-        print_every_one_sec(counter),
-        print_every_five_sec(counter),
-        print_every_ten_sec(counter),
+        waiter_1(),
+        waiter_2(),
+        waiter_3(),
     ]
 
     await asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    event_loop = asyncio.get_event_loop()
+    event_loop.run_until_complete(main_async_function())
