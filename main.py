@@ -1,46 +1,29 @@
 import asyncio
 import threading
 from asyncio import sleep
+from contextvars import ContextVar
+
+MyCounter = ContextVar("counter", default=0)
 
 
-async def count(counter):
-    print("Количество записей в списке:", len(counter))
+async def increase():
+    my_counter = MyCounter.get()
+    my_counter += 1
+    MyCounter.set(my_counter)
 
+
+async def count():
     while True:
-        await sleep(0.001)
-        counter.append(1)
+        await increase()
+        my_counter = MyCounter.get()
+        print(f"Счетчик: {my_counter}")
 
-
-async def print_every_one_sec(counter):
-    while True:
         await sleep(1)
-        print("- 1 секунда прошла, количество записей: ", len(counter))
-
-
-async def print_every_five_sec(counter):
-    while True:
-        await sleep(5)
-        print("---- 5 секунд прошла, количество записей: ", len(counter))
-
-
-async def print_every_ten_sec(counter):
-    while True:
-        await sleep(10)
-        print("-------- 10 секунд прошла, количество записей: ", len(counter))
 
 
 async def main():
-    counter = list()
-
-    tasks = [
-        count(counter),
-        print_every_one_sec(counter),
-        print_every_five_sec(counter),
-        print_every_ten_sec(counter),
-    ]
-
-    await asyncio.gather(*tasks)
+    pass
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(count())
