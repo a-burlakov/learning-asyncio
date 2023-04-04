@@ -33,17 +33,23 @@ async def main_async_function():
     # await по сути значит, что в этом месте мы останавливаем исполнение функции, чтобы ожидать выполнения других
     # _асинхронных_ (!) функций (тоже корутин). Когда эти корутины выполнятся, то event loop скажет интерпретатору об этом,
     # и выполнение продолжится.
-    tasks = [
-        waiter_1(),
-        waiter_2(),
-        waiter_3(),
-    ]
-
-    await asyncio.gather(*tasks)
+    # tasks = [
+    #     waiter_1(),
+    #     waiter_2(),
+    #     waiter_3(),
+    # ]
+    #
+    # await asyncio.gather(*tasks)
+    loop = asyncio.get_event_loop()
+    loop.create_task(waiter_1())
+    loop.create_task(waiter_2())
+    loop.create_task(waiter_3())
 
 
 if __name__ == "__main__":
     # event_loop = asyncio.get_event_loop()
     # event_loop.run_until_complete(main_async_function())
-    asyncio.run(main_async_function())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main_async_function())
+    loop.run_forever()
     print("Все?")
